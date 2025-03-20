@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Free online file conversion tools for PDF, images, and more. No files saved, instant results.">
     <meta name="keywords" content="file converter, pdf to image, image to pdf, free converter, online tools">
     <title>Free File Converter - Instant & Private</title>
@@ -16,12 +16,20 @@
     <h1>Free File Converter</h1>
     <p>Convert files instantly. No uploads, no storage—100% private.</p>
 
-    <!-- Conversion Tool Example -->
+    <!-- PDF to Image Tool -->
     <div class="tool">
         <h2>PDF to Image</h2>
         <input type="file" id="pdfInput" accept=".pdf">
         <button onclick="convertPDFtoImage()">Convert</button>
-        <div id="result"></div>
+        <div id="pdfResult"></div>
+    </div>
+
+    <!-- Image to PDF Tool -->
+    <div class="tool">
+        <h2>Image to PDF</h2>
+        <input type="file" id="imageInput" accept="image/*">
+        <button onclick="convertImageToPDF()">Convert</button>
+        <div id="imageResult"></div>
     </div>
 
     <!-- Ad Space -->
@@ -29,8 +37,11 @@
         <p>[Ad Placeholder - Replace with AdSense or similar code]</p>
     </div>
 
+    <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
     <script>
+        // PDF to Image Conversion
         async function convertPDFtoImage() {
             const fileInput = document.getElementById('pdfInput');
             const file = fileInput.files[0];
@@ -52,8 +63,35 @@
             link.download = 'converted-image.png';
             link.click();
 
-            document.getElementById('result').innerText = 'Download started!';
-            fileInput.value = ''; // Clear input for privacy
+            document.getElementById('pdfResult').innerText = 'Download started!';
+            fileInput.value = ''; // Clear input
+        }
+
+        // Image to PDF Conversion
+        async function convertImageToPDF() {
+            const fileInput = document.getElementById('imageInput');
+            const file = fileInput.files[0];
+            if (!file) return alert('Please select an image file');
+
+            const img = new Image();
+            img.src = URL.createObjectURL(file);
+            await new Promise((resolve) => (img.onload = resolve));
+
+            const pdfDoc = await PDFLib.PDFDocument.create();
+            const page = pdfDoc.addPage([img.width, img.height]);
+            const imgData = await fetch(img.src).then((res) => res.arrayBuffer());
+            const embeddedImg = await pdfDoc.embedPng(imgData); // Supports PNG/JPG
+            page.drawImage(embeddedImg, { x: 0, y: 0, width: img.width, height: img.height });
+
+            const pdfBytes = await pdfDoc.save();
+            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'converted-file.pdf';
+            link.click();
+
+            document.getElementById('imageResult').innerText = 'Download started!';
+            fileInput.value = ''; // Clear input
         }
     </script>
 </body>
