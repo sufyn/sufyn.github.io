@@ -3,47 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Free online file conversion tools for PDF, images, and more. No files saved, instant results.">
-    <meta name="keywords" content="file converter, pdf to image, image to pdf, free converter, online tools">
+    <meta name="description" content="Free online file conversion tools for PDF, images, text, and more. No files saved, instant results.">
+    <meta name="keywords" content="file converter, pdf to image, image to pdf, jpg to png, text to pdf, free tools">
     <title>Free File Converter - Instant & Private</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-        .tool { margin: 20px; padding: 10px; border: 1px solid #ccc; }
-        .ad { margin: 20px; padding: 10px; background-color: #f0f0f0; }
-    </style>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .tool { margin: 20px auto; max-width: 600px; }
+        .ad { margin: 20px auto; max-width: 600px; background-color: #f0f0f0; padding: 10px; }
+    </style>
 </head>
 <body>
-    <h1>Free File Converter</h1>
-    <p>Convert files instantly. No uploads, no storage—100% private.</p>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="#">Free File Converter</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#privacy">Privacy</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-    <!-- PDF to Image Tool -->
-    <div class="tool">
-        <h2>PDF to Image</h2>
-        <input type="file" id="pdfInput" accept=".pdf">
-        <button onclick="convertPDFtoImage()">Convert</button>
-        <div id="pdfResult"></div>
-    </div>
+    <div class="container text-center">
+        <!-- Tools and Ad Space from above -->
+        
+        <h1 class="my-4">Free File Converter</h1>
+        <p>Convert files instantly. No uploads, no storage—100% private.</p>
 
-    <!-- Image to PDF Tool -->
-    <div class="tool">
-        <h2>Image to PDF</h2>
-        <input type="file" id="imageInput" accept="image/*">
-        <button onclick="convertImageToPDF()">Convert</button>
-        <div id="imageResult"></div>
-    </div>
+        <!-- PDF to Image -->
+        <div class="tool card p-3">
+            <h2>PDF to Image</h2>
+            <input type="file" id="pdfInput" accept=".pdf" class="form-control mb-2">
+            <button onclick="convertPDFtoImage()" class="btn btn-primary">Convert</button>
+            <div id="pdfResult" class="mt-2"></div>
+        </div>
 
-    <!-- Ad Space -->
-    <div class="ad">
-        <p>[Ad Placeholder - Replace with AdSense or similar code]</p>
+        <!-- Image to PDF -->
+        <div class="tool card p-3">
+            <h2>Image to PDF</h2>
+            <input type="file" id="imageInput" accept="image/*" class="form-control mb-2">
+            <button onclick="convertImageToPDF()" class="btn btn-primary">Convert</button>
+            <div id="imageResult" class="mt-2"></div>
+        </div>
+
+        <!-- JPG to PNG -->
+        <div class="tool card p-3">
+            <h2>JPG to PNG</h2>
+            <input type="file" id="jpgInput" accept="image/jpeg" class="form-control mb-2">
+            <button onclick="convertJPGtoPNG()" class="btn btn-primary">Convert</button>
+            <div id="jpgResult" class="mt-2"></div>
+        </div>
+
+        <!-- Text to PDF -->
+        <div class="tool card p-3">
+            <h2>Text to PDF</h2>
+            <textarea id="textInput" class="form-control mb-2" rows="4" placeholder="Enter text here"></textarea>
+            <button onclick="convertTextToPDF()" class="btn btn-primary">Convert</button>
+            <div id="textResult" class="mt-2"></div>
+        </div>
+
+        <!-- Ad Space -->
+        <div class="ad">
+            <p>[Ad Placeholder - Replace with AdSense or similar code]</p>
+        </div>
     </div>
 
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
     <script>
-        // PDF to Image Conversion
+        // PDF to Image
         async function convertPDFtoImage() {
+            const resultDiv = document.getElementById('pdfResult');
+            resultDiv.innerText = 'Converting...';
             const fileInput = document.getElementById('pdfInput');
             const file = fileInput.files[0];
             if (!file) return alert('Please select a PDF file');
@@ -64,12 +97,14 @@
             link.download = 'converted-image.png';
             link.click();
 
-            document.getElementById('pdfResult').innerText = 'Download started!';
-            fileInput.value = ''; // Clear input
+            resultDiv.innerText = 'Download started!';
+            fileInput.value = '';
         }
 
-        // Image to PDF Conversion
+        // Image to PDF
         async function convertImageToPDF() {
+            const resultDiv = document.getElementById('imageResult');
+            resultDiv.innerText = 'Converting...';
             const fileInput = document.getElementById('imageInput');
             const file = fileInput.files[0];
             if (!file) return alert('Please select an image file');
@@ -81,7 +116,7 @@
             const pdfDoc = await PDFLib.PDFDocument.create();
             const page = pdfDoc.addPage([img.width, img.height]);
             const imgData = await fetch(img.src).then((res) => res.arrayBuffer());
-            const embeddedImg = await pdfDoc.embedPng(imgData); // Supports PNG/JPG
+            const embeddedImg = await pdfDoc.embedPng(imgData);
             page.drawImage(embeddedImg, { x: 0, y: 0, width: img.width, height: img.height });
 
             const pdfBytes = await pdfDoc.save();
@@ -91,9 +126,68 @@
             link.download = 'converted-file.pdf';
             link.click();
 
-            document.getElementById('imageResult').innerText = 'Download started!';
-            fileInput.value = ''; // Clear input
+            resultDiv.innerText = 'Download started!';
+            fileInput.value = '';
+        }
+
+        // JPG to PNG
+        async function convertJPGtoPNG() {
+            const resultDiv = document.getElementById('jpgResult');
+            resultDiv.innerText = 'Converting...';
+            const fileInput = document.getElementById('jpgInput');
+            const file = fileInput.files[0];
+            if (!file) return alert('Please select a JPG file');
+
+            const img = new Image();
+            img.src = URL.createObjectURL(file);
+            await new Promise((resolve) => (img.onload = resolve));
+
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+            const pngData = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.href = pngData;
+            link.download = 'converted-image.png';
+            link.click();
+
+            resultDiv.innerText = 'Download started!';
+            fileInput.value = '';
+        }
+
+        // Text to PDF
+        async function convertTextToPDF() {
+            const resultDiv = document.getElementById('textResult');
+            resultDiv.innerText = 'Converting...';
+            const textInput = document.getElementById('textInput').value;
+            if (!textInput) return alert('Please enter some text');
+
+            const pdfDoc = await PDFLib.PDFDocument.create();
+            const page = pdfDoc.addPage([595, 842]); // A4 size in points
+            const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+            page.drawText(textInput, { x: 50, y: 750, size: 12, font });
+
+            const pdfBytes = await pdfDoc.save();
+            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'converted-text.pdf';
+            link.click();
+
+            resultDiv.innerText = 'Download started!';
+            document.getElementById('textInput').value = '';
         }
     </script>
+
+
+    <footer class="bg-light py-3 mt-4">
+        <div class="container">
+            <p id="privacy">Privacy: No files are stored or uploaded. All processing happens in your browser.</p>
+            <p id="contact">Contact: [Your email or form link]</p>
+            <p>&copy; 2025 Free File Converter</p>
+        </div>
+    </footer>
 </body>
 </html>
